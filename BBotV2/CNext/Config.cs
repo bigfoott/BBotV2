@@ -31,10 +31,7 @@ namespace BBotV2.CNext
             }
             else
             {
-                if (newPrefix.Length > 5)
-                {
-                    await  Program.bot.SendError(ctx, "Prefix", "Prefix cannot be longer than 5 characters.");
-                }
+                if (newPrefix.Length > 5) await Program.bot.SendError(ctx, "Prefix", "Prefix cannot be longer than 5 characters.");
                 else
                 {
                     json.prefix = newPrefix;

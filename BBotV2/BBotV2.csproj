@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
-    <Compile Include="CNext\Main.cs" />
+    <Compile Include="CNext\General.cs" />
     <Compile Include="CNext\Tag.cs" />
     <Compile Include="CNext\Config.cs" />
     <Compile Include="Misc\FileManager.cs" />

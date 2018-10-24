@@ -57,7 +57,7 @@ namespace BBotV2
                 IgnoreExtraArguments = true
             });
 
-            cnext.RegisterCommands<CNext.Main>();
+            cnext.RegisterCommands<CNext.General>();
             cnext.RegisterCommands<CNext.Tag>();
             cnext.RegisterCommands<CNext.Config>();
 
