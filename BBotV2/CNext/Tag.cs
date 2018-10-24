@@ -30,7 +30,7 @@ namespace BBotV2.CNext
                 if (args != "") message = message.Replace("%arg%", args);
                 else message = message.Replace(" %arg%", "").Replace("%arg% ", "");
 
-                if (Perms.CanDelete(ctx.Guild.CurrentMember, ctx.Channel)) await ctx.Message.DeleteAsync();
+                if (Perms.BotCanDelete(ctx.Guild.CurrentMember, ctx.Channel)) await ctx.Message.DeleteAsync();
                 await ctx.RespondAsync(message);
             }
         }
@@ -38,6 +38,8 @@ namespace BBotV2.CNext
         [Command("createtag"), Aliases("edittag")]
         public async Task CreateTag(CommandContext ctx, string name = "", [RemainingText] string message = "")
         {
+            if (!Perms.UserIsMod(ctx.Member, ctx.Channel)) return;
+
             if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`, `Tag message`");
             else if (message == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag message`");
             else
@@ -77,6 +79,8 @@ namespace BBotV2.CNext
         [Command("deletetag"), Aliases("deltag")]
         public async Task DeleteTag(CommandContext ctx, string name = "")
         {
+            if (!Perms.UserIsMod(ctx.Member, ctx.Channel)) return;
+
             ulong id = ctx.Guild.Id;
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
