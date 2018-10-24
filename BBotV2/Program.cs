@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DSharpPlus.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +29,7 @@ namespace BBotV2
 
         static async Task MainAsync(string[] args)
         {
-            bot = new Bot(token);
+            bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Idle, "#ff7700");
 
             await Task.Delay(-1);
         }

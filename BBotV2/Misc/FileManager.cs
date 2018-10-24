@@ -14,11 +14,15 @@ namespace BBotV2.Misc
         {
             if (!Directory.Exists("files"))
                 Directory.CreateDirectory("files");
+            if (!Directory.Exists("guilds"))
+                Directory.CreateDirectory("guilds");
+            if (!Directory.Exists("guilds/old"))
+                Directory.CreateDirectory("guilds/old");
 
             if (!File.Exists("files/config.json"))
                 File.WriteAllText("files/config.json", "{\"token\": \"\",\"botOwnerId\": \"\"}");
         }
-
+        
         public static void CheckGuildFiles(ulong id)
         {
             if (!Directory.Exists($"guilds/{id}"))
@@ -28,8 +32,6 @@ namespace BBotV2.Misc
                 File.WriteAllText($"guilds/{id}/config.json", "{\"prefix\": \".\"}");
             if (!File.Exists($"guilds/{id}/tags.json"))
                 File.WriteAllText($"guilds/{id}/tags.json", "{}");
-            if (!File.Exists($"guilds/{id}/flairs.json"))
-                File.WriteAllText($"guilds/{id}/flairs.json", "{}");
         }
     }
 }

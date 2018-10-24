@@ -14,15 +14,14 @@ namespace BBotV2.CNext
         [Command("help"), Aliases("h")]
         public async Task Help(CommandContext ctx)
         {
-            
+
             var embed = new DiscordEmbedBuilder()
             {
-                Title = "BBot V2",
-                Description = "Test successful!",
-                Color = new DiscordColor("#640f7e")
+                Title = "Help",
+                Description = "ok so basically im monky",
+                Color = Program.bot.embedColor
             };
 
-            
             await ctx.RespondAsync("", embed: embed);
         }
     }

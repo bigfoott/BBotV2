@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BBotV2.Misc;
 
 namespace BBotV2
 {
@@ -20,12 +21,15 @@ namespace BBotV2
         public CommandsNextExtension cnext;
 
         public DateTime startTime;
+        public DiscordColor embedColor;
 
         public int totalUsers = 0;
         public int totalGuilds = 0;
 
-        public Bot(string token)
+        public Bot(string token, string activity = "", ActivityType activityType = ActivityType.Playing, UserStatus status = UserStatus.Online, string embedColor = "#4f545c")
         {
+            this.embedColor = new DiscordColor(embedColor);
+            
             var config = new DiscordConfiguration
             {
                 Token = token,
@@ -54,18 +58,16 @@ namespace BBotV2
             });
 
             cnext.RegisterCommands<CNext.Main>();
+            cnext.RegisterCommands<CNext.Tag>();
+            cnext.RegisterCommands<CNext.Config>();
 
             client.GuildCreated += async e =>
             {
                 if (Directory.Exists($"guilds/old/{e.Guild.Id}"))
                     Directory.Move($"guilds/old/{e.Guild.Id}", $"guilds/{e.Guild.Id}");
+                FileManager.CheckGuildFiles(e.Guild.Id);
 
-                Misc.FileManager.CheckGuildFiles(e.Guild.Id);
-                
-                totalGuilds = e.Client.Guilds.Count;
-                totalUsers = 0;
-                foreach (DiscordGuild g in e.Client.Guilds.Values.Where(g => g.Id != 264445053596991498 && g.Id != 110373943822540800))
-                    totalUsers += g.MemberCount;
+                UpdateCount();
             };
 
 
@@ -73,24 +75,20 @@ namespace BBotV2
             {
                 Directory.Move($"guilds/{e.Guild.Id}", $"guilds/old/{e.Guild.Id}");
 
-                totalGuilds = e.Client.Guilds.Count;
-                totalUsers = 0;
-                foreach (DiscordGuild g in e.Client.Guilds.Values)
-                    totalUsers += g.MemberCount;
+                UpdateCount();
             };
-
+            
 
             client.Ready += async e =>
             {
-                await client.UpdateStatusAsync(new DiscordActivity("u.help • bigft.io/URBot", ActivityType.Playing));
+                await client.UpdateStatusAsync(new DiscordActivity(activity, activityType), status);
             };
 
 
             client.GuildAvailable += async e =>
             {
-                totalGuilds = e.Client.Guilds.Count;
-                foreach (DiscordGuild g in e.Client.Guilds.Values.Where(g => g.Id != 264445053596991498 && g.Id != 110373943822540800))
-                    totalUsers += g.MemberCount;
+                FileManager.CheckGuildFiles(e.Guild.Id);
+                UpdateCount();
             };
 
             client.ConnectAsync();
@@ -99,13 +97,34 @@ namespace BBotV2
 
         private static Task<int> PrefixPredicateAsync(DiscordMessage m)
         {
-            //dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{m.Channel.Guild.Id}/config.json"));
+            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{m.Channel.Guild.Id}/config.json"));
 
             string pref = ".";
-            //pref = (string)json.prefix;
+            pref = (string)json.prefix;
 
             return Task.FromResult(m.GetStringPrefixLength(pref));
         }
 
+        private void UpdateCount()
+        {
+            totalGuilds = client.Guilds.Count;
+            totalUsers = 0;
+            foreach (DiscordGuild g in client.Guilds.Values)
+                totalUsers += g.MemberCount;
+        }
+
+        public async Task SendError(CommandContext ctx, string title, string message)
+        {
+            var embed = new DiscordEmbedBuilder()
+            {
+                Title = title,
+                Description = "**ERROR**\n\n" + message,
+                Color = DiscordColor.DarkRed
+            };
+
+            var msg = await ctx.RespondAsync("", embed: embed);
+            await Task.Delay(new TimeSpan(0, 0, 5));
+            await msg.DeleteAsync();
+        }
     }
 }

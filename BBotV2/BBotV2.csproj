@@ -9,11 +9,12 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>BBotV2</RootNamespace>
     <AssemblyName>BBotV2</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -74,7 +75,10 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="CNext\Main.cs" />
+    <Compile Include="CNext\Tag.cs" />
+    <Compile Include="CNext\Config.cs" />
     <Compile Include="Misc\FileManager.cs" />
+    <Compile Include="Misc\Perms.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
