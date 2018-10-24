@@ -22,7 +22,8 @@ namespace BBotV2.CNext
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
 
-            if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
             else
             {
                 string message = tags[name];
@@ -56,27 +57,76 @@ namespace BBotV2.CNext
 
                 File.WriteAllText($"guilds/{id}/tags.json", JsonConvert.SerializeObject(tags, Formatting.Indented));
 
+                bool hasCodeBlock = message.Contains("```");
+                if (hasCodeBlock)
+                    message = message.Replace("```", "'''");
+
                 var embed = new DiscordEmbedBuilder()
                 {
                     Title = "Tags",
-                    Description = $"Successfully {action} tag `{name}` with message:\n```\n{message}\n```",
+                    Description = $"Successfully {action} tag `{name}` with message:\n```{message}```",
                     Color = Program.bot.embedColor
                 };
-                
+                if (hasCodeBlock)
+                    embed.WithFooter("Note: Triple back-quotes (```) replaced with triple apostrophes (''') in this message.");
+
                 await ctx.RespondAsync("", embed: embed);
             }
         }
 
         [Command("deletetag"), Aliases("deltag")]
-        public async Task DeleteTag(CommandContext ctx)
+        public async Task DeleteTag(CommandContext ctx, string name = "")
         {
+            ulong id = ctx.Guild.Id;
 
+            var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
+
+            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            else
+            {
+                tags.Remove(name);
+
+                File.WriteAllText($"guilds/{id}/tags.json", JsonConvert.SerializeObject(tags, Formatting.Indented));
+
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Tags",
+                    Description = $"Successfully deleted tag `{name}`.",
+                    Color = Program.bot.embedColor
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+            }
         }
 
         [Command("rawtag")]
         public async Task RawTag(CommandContext ctx, string name = "")
         {
-            
+            ulong id = ctx.Guild.Id;
+
+            var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
+
+            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            else
+            {
+                string message = tags[name];
+                bool hasCodeBlock = message.Contains("```");
+                if (hasCodeBlock)
+                    message = message.Replace("```", "'''");
+
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Tags",
+                    Description = $"Raw message for `{name}`:\n```{message}```",
+                    Color = Program.bot.embedColor
+                };
+                if (hasCodeBlock)
+                    embed.WithFooter("Note: Triple back-quotes (```) replaced with apostrophes (''') in this message.");
+                
+                await ctx.RespondAsync("", embed: embed);
+            }
         }
 
         [Command("listtags"), Aliases("tags")]
@@ -88,8 +138,8 @@ namespace BBotV2.CNext
             else
             {
                 string message = "**Tags in this server:**\n```";
-                foreach (KeyValuePair<string, string> tag in tags) message += tag.Key + " ";
-                message = message.Substring(0, message.Length - 1);
+                foreach (KeyValuePair<string, string> tag in tags) message += tag.Key + ", ";
+                message = message.Substring(0, message.Length - 2);
                 message += "```";
 
                 var embed = new DiscordEmbedBuilder()
