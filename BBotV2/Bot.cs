@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BBotV2.Misc;
+using BBotV2.CNext;
 
 namespace BBotV2
 {
@@ -57,10 +58,10 @@ namespace BBotV2
                 IgnoreExtraArguments = true
             });
 
-            cnext.RegisterCommands<CNext.General>();
-            cnext.RegisterCommands<CNext.Tag>();
-            cnext.RegisterCommands<CNext.Config>();
-
+            cnext.RegisterCommands<General>();
+            cnext.RegisterCommands<Tag>();
+            cnext.RegisterCommands<Config>();
+            
             client.GuildCreated += async e =>
             {
                 if (Directory.Exists($"guilds/old/{e.Guild.Id}"))

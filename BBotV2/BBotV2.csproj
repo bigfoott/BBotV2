@@ -78,6 +78,7 @@
     <Compile Include="CNext\Tag.cs" />
     <Compile Include="CNext\Config.cs" />
     <Compile Include="Misc\FileManager.cs" />
+    <Compile Include="Misc\IsAllowedAttribute.cs" />
     <Compile Include="Misc\Perms.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

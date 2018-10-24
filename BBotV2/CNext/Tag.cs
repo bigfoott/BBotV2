@@ -35,11 +35,9 @@ namespace BBotV2.CNext
             }
         }
 
-        [Command("createtag"), Aliases("edittag")]
+        [Command("createtag"), Aliases("edittag"), IsAllowed("mod")]
         public async Task CreateTag(CommandContext ctx, string name = "", [RemainingText] string message = "")
         {
-            if (!Perms.UserIsMod(ctx.Member, ctx.Channel)) return;
-
             if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`, `Tag message`");
             else if (message == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag message`");
             else
@@ -76,11 +74,9 @@ namespace BBotV2.CNext
             }
         }
 
-        [Command("deletetag"), Aliases("deltag")]
+        [Command("deletetag"), Aliases("deltag"), IsAllowed("mod")]
         public async Task DeleteTag(CommandContext ctx, string name = "")
         {
-            if (!Perms.UserIsMod(ctx.Member, ctx.Channel)) return;
-
             ulong id = ctx.Guild.Id;
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));

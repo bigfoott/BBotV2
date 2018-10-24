@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using BBotV2.Misc;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
@@ -13,11 +14,11 @@ namespace BBotV2.CNext
 {
     class Config : BaseCommandModule
     {
-        [Command("prefix")]
+        [Command("prefix"), IsAllowed("mod")]
         public async Task Help(CommandContext ctx, string newPrefix = "")
         {
             dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"));
-
+            
             if (newPrefix == "")
             {
                 var embed = new DiscordEmbedBuilder()

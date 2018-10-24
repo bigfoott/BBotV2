@@ -28,10 +28,11 @@ namespace BBotV2.CNext
 
             embed.AddField("General Commands", $"• **{p}help:** Show this message.");
             embed.AddField("Tag Commands", $"• **{p}tag <tag name> [args]:** Display a tag." +
-                                 $"\n• **{p}listtags:** List all tags on this server." +
-                                 $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
-                                 $"\n• **{p}createtag/edittag <tag name> <message>:** Create or edit a tag. \\🔨" +
-                                 $"\n• **{p}deletetag <tag name>:** Delete a tag. \\🔨");
+                                         $"\n• **{p}listtags:** List all tags on this server." +
+                                         $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
+                                         $"\n• **{p}createtag/edittag <tag name> <message>:** Create or edit a tag. \\🔨" +
+                                         $"\n• **{p}deletetag <tag name>:** Delete a tag. \\🔨");
+            embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨");
 
             await ctx.RespondAsync("", embed: embed);
         }
