@@ -42,13 +42,13 @@ namespace BBotV2
         static async Task MainAsync(string[] args)
         {
             Log("MainAsync started.");
-
+            
             Log("Creating bot object.");
             bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Idle, "#ff7700");
             
             await Task.Delay(-1);
         }
-
+        
         public static void Log(string message, string color = "&7")
         {
             FConsole.WriteLine($"{color}[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt")}] &f{message}");

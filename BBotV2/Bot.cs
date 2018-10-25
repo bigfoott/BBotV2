@@ -67,7 +67,10 @@ namespace BBotV2
             });
 
             cnext.RegisterCommands<General>();
+            cnext.RegisterCommands<Info>();
+
             cnext.RegisterCommands<Tag>();
+            
             cnext.RegisterCommands<Config>();
 
             Program.Log("Initialized cnext extension.");
