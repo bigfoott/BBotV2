@@ -30,7 +30,8 @@ namespace BBotV2
         public Bot(string token, string activity = "", ActivityType activityType = ActivityType.Playing, UserStatus status = UserStatus.Online, string embedColor = "#4f545c")
         {
             this.embedColor = new DiscordColor(embedColor);
-            
+            Program.Log("Initialized embed color.");
+
             var config = new DiscordConfiguration
             {
                 Token = token,
@@ -39,14 +40,21 @@ namespace BBotV2
                 LogLevel = LogLevel.Critical,
                 AutoReconnect = true
             };
+            Program.Log("Initialized config object.");
+            
             if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
                 Environment.OSVersion.Version.Major == 6 &&
                 Environment.OSVersion.Version.Minor == 1)
+            {
                 config.WebSocketClientFactory = WebSocketSharpClient.CreateNew;
+                Program.Log("Switched websocket to WebSocketSharp. (Windows 7)");
+            }
             
             client = new DiscordClient(config);
+            Program.Log("Initialized client.");
 
             inter = client.UseInteractivity(new InteractivityConfiguration() { Timeout = new TimeSpan(0, 1, 30) });
+            Program.Log("Initialized interactivity extension.");
 
             cnext = client.UseCommandsNext(new CommandsNextConfiguration
             {
@@ -61,6 +69,8 @@ namespace BBotV2
             cnext.RegisterCommands<General>();
             cnext.RegisterCommands<Tag>();
             cnext.RegisterCommands<Config>();
+
+            Program.Log("Initialized cnext extension.");
             
             client.GuildCreated += async e =>
             {
@@ -70,30 +80,30 @@ namespace BBotV2
 
                 UpdateCount();
             };
-
-
             client.GuildDeleted += async e =>
             {
                 Directory.Move($"guilds/{e.Guild.Id}", $"guilds/old/{e.Guild.Id}");
 
                 UpdateCount();
             };
-            
-
-            client.Ready += async e =>
-            {
-                await client.UpdateStatusAsync(new DiscordActivity(activity, activityType), status);
-            };
-
-
             client.GuildAvailable += async e =>
             {
                 FileManager.CheckGuildFiles(e.Guild.Id);
                 UpdateCount();
             };
+            client.Ready += async e =>
+            {
+                await client.UpdateStatusAsync(new DiscordActivity(activity, activityType), status);
 
+                startTime = DateTime.Now;
+
+                Program.Log("Setup completed.");
+            };
+            Program.Log("Subscribed to events.");
+
+            Program.Log("Connecting..."); 
             client.ConnectAsync();
-            startTime = DateTime.Now;
+            Program.Log("Connected.");
         }
 
         private static Task<int> PrefixPredicateAsync(DiscordMessage m)
@@ -102,7 +112,7 @@ namespace BBotV2
 
             string pref = ".";
             pref = (string)json.prefix;
-
+            
             return Task.FromResult(m.GetStringPrefixLength(pref));
         }
 

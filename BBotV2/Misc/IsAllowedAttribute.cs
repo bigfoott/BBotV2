@@ -21,7 +21,7 @@ namespace BBotV2.Misc
         public override async Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
             if (type == "mod") return Perms.UserIsMod(ctx.Member, ctx.Channel);
-            else if (type == "bigfoot") return ctx.Member.Id == Program.botOwnerId;
+            else if (type == "botowner") return ctx.Member.Id == Program.botOwnerId;
             else return false;
         }
     }
