@@ -54,7 +54,7 @@ namespace BBotV2
             Program.Log("Initialized client.");
 
             inter = client.UseInteractivity(new InteractivityConfiguration() { Timeout = new TimeSpan(0, 1, 30) });
-            Program.Log("Initialized interactivity extension.");
+            Program.Log("Initialized Interactivity extension.");
 
             cnext = client.UseCommandsNext(new CommandsNextConfiguration
             {
@@ -67,13 +67,12 @@ namespace BBotV2
             });
 
             cnext.RegisterCommands<General>();
-            cnext.RegisterCommands<Info>();
-
             cnext.RegisterCommands<Tag>();
-            
+            cnext.RegisterCommands<Fun>();
+            cnext.RegisterCommands<Moderation>();
             cnext.RegisterCommands<Config>();
 
-            Program.Log("Initialized cnext extension.");
+            Program.Log("Initialized CNext extension.");
             
             client.GuildCreated += async e =>
             {

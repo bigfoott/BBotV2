@@ -77,7 +77,8 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="CNext\General.cs" />
-    <Compile Include="CNext\Info.cs" />
+    <Compile Include="CNext\Fun.cs" />
+    <Compile Include="CNext\Moderation.cs" />
     <Compile Include="CNext\Tag.cs" />
     <Compile Include="CNext\Config.cs" />
     <Compile Include="Misc\FConsole.cs" />
