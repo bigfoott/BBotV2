@@ -29,8 +29,8 @@ namespace BBotV2.CNext
                 string message = tags[name];
                 if (args != "") message = message.Replace("%arg%", args);
                 else message = message.Replace(" %arg%", "").Replace("%arg% ", "");
-
-                if (Perms.BotCanDelete(ctx.Guild.CurrentMember, ctx.Channel)) await ctx.Message.DeleteAsync();
+                
+                if (Perms.UserHasChannelPerm(ctx.Guild.CurrentMember, ctx.Channel, Permissions.ManageMessages)) await ctx.Message.DeleteAsync();
                 await ctx.RespondAsync(message);
             }
         }
