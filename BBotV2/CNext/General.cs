@@ -22,19 +22,20 @@ namespace BBotV2.CNext
             var embed = new DiscordEmbedBuilder()
             {
                 Title = "Help",
-                //Description = "",
                 Color = Program.bot.embedColor,
                 Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = "🔨 = Moderator only command." }
             };
 
             embed.AddField("General Commands", $"• **{p}help:** Show this message." +
-                                             $"\n• **{p}whois:** Get info about a user.");
-            embed.AddField("Fun Commands", $"• **{p}ascii:** Create ascii art of text.");
+                                             $"\n• **{p}whois <user>:** Get info about a user.");
+            embed.AddField("Fun Commands", $"• **{p}ascii <message>:** Create ascii art of text." +
+                                         $"\n• **{p}math <equation>:** Calcuate a math equation.");
             embed.AddField("Tag Commands", $"• **{p}tag <tag name> [args]:** Display a tag." +
                                          $"\n• **{p}listtags:** List all tags on this server." +
                                          $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
                                          $"\n• **{p}createtag/edittag <tag name> <message>:** Create or edit a tag. \\🔨" +
                                          $"\n• **{p}deletetag <tag name>:** Delete a tag. \\🔨");
+            embed.AddField("Moderation COmmands", $"• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" );
             embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨");
 
             await ctx.RespondAsync("", embed: embed);
@@ -46,7 +47,7 @@ namespace BBotV2.CNext
             if (m == default) m = ctx.Member;
 
             DiscordColor embedColor = DiscordColor.Grayple;
-
+            
             var role = m.Roles.Where(r => r.Color.Value != 0).OrderByDescending(r => r.Position).FirstOrDefault();
             if (role != null) embedColor = role.Color;
 

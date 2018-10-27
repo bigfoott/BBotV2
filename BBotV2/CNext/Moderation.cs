@@ -121,7 +121,7 @@ namespace BBotV2.CNext
                     else
                     {
                         await msg.DeleteAsync();
-                        await Program.bot.SendError(ctx, "Delete", $"{ex}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                        await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
                     }
 
                 }
