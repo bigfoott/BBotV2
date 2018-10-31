@@ -93,8 +93,7 @@ namespace BBotV2.Misc
             if (e.Message.Attachments.Count > 0)
             {
                 string _s = "s";
-                if (e.Message.Attachments.Count == 1)
-                    _s = "";
+                if (e.Message.Attachments.Count == 1) _s = "";
 
                 string a = "";
                 foreach (DiscordAttachment att in e.Message.Attachments)
@@ -102,8 +101,20 @@ namespace BBotV2.Misc
 
                 embed.AddField("Attachment" + _s, a);
             }
+            if (e.Message.Reactions.Count > 0)
+            {
+                string _s = "s";
+                if (e.Message.Reactions.Count == 1) _s = "";
 
-            
+                string r = "";
+                foreach (DiscordReaction re in e.Message.Reactions) r += re.Emoji.Name + ", ";
+                r = r.Substring(0, r.Length - 2);
+
+                embed.AddField("Reaction" + _s, r);
+
+                Discord
+            }
+
             await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
         }
 
