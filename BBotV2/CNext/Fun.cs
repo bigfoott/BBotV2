@@ -43,7 +43,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Math",
                     Description = $"Equation: **`{equation}`**\n\nResult: **`{val}`**",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
                 await ctx.RespondAsync("", embed: embed);
             }

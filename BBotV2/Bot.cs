@@ -22,15 +22,13 @@ namespace BBotV2
         public CommandsNextExtension cnext;
 
         public DateTime startTime;
-        public DiscordColor embedColor;
 
         public int totalUsers = 0;
         public int totalGuilds = 0;
 
-        public Bot(string token, string activity = "", ActivityType activityType = ActivityType.Playing, UserStatus status = UserStatus.Online, string embedColor = "#4f545c")
+        public Bot(string token, string activity = "", ActivityType activityType = ActivityType.Playing, UserStatus status = UserStatus.Online)
         {
-            this.embedColor = new DiscordColor(embedColor);
-            Program.Log("Initialized embed color.");
+            Program.Log("Initialized embed color.", "&2");
 
             var config = new DiscordConfiguration
             {
@@ -40,21 +38,19 @@ namespace BBotV2
                 LogLevel = LogLevel.Critical,
                 AutoReconnect = true
             };
-            Program.Log("Initialized config object.");
+            Program.Log("Initialized config object.", "&2");
             
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
-                Environment.OSVersion.Version.Major == 6 &&
-                Environment.OSVersion.Version.Minor == 1)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
             {
                 config.WebSocketClientFactory = WebSocketSharpClient.CreateNew;
-                Program.Log("Switched websocket to WebSocketSharp. (Windows 7)");
+                Program.Log("Switched websocket to WebSocketSharp. (Windows 7)", "&a");
             }
             
             client = new DiscordClient(config);
-            Program.Log("Initialized client.");
+            Program.Log("Initialized client.", "&2");
 
             inter = client.UseInteractivity(new InteractivityConfiguration() { Timeout = new TimeSpan(0, 1, 30) });
-            Program.Log("Initialized Interactivity extension.");
+            Program.Log("Initialized Interactivity extension.", "&2");
 
             cnext = client.UseCommandsNext(new CommandsNextConfiguration
             {
@@ -65,14 +61,20 @@ namespace BBotV2
                 EnableMentionPrefix = true,
                 IgnoreExtraArguments = true
             });
-
+            
             cnext.RegisterCommands<General>();
             cnext.RegisterCommands<Tag>();
             cnext.RegisterCommands<Fun>();
             cnext.RegisterCommands<Moderation>();
             cnext.RegisterCommands<Config>();
+            
+            Program.Log("Initialized CNext extension.", "&2");
 
-            Program.Log("Initialized CNext extension.");
+            cnext.CommandExecuted += Logger.LogCommand;
+            client.MessageDeleted += Logger.LogDeletedMessage;
+            client.MessagesBulkDeleted += Logger.LogBulkDeletedMessages;
+            client.MessageUpdated += Logger.LogMessageEdit;
+            client.VoiceStateUpdated += Logger.LogVoice;
             
             client.GuildCreated += async e =>
             {
@@ -99,13 +101,15 @@ namespace BBotV2
 
                 startTime = DateTime.Now;
 
-                Program.Log("Setup completed.");
-            };
-            Program.Log("Subscribed to events.");
+                Logger.Init(client);
 
-            Program.Log("Connecting..."); 
+                Program.Log("Setup completed.", "%2&0");
+            };
+            Program.Log("Subscribed to events.", "&2");
+
+            Program.Log("Connecting...", "&2"); 
             client.ConnectAsync();
-            Program.Log("Connected.");
+            Program.Log("Connected.", "&2");
         }
 
         private static Task<int> PrefixPredicateAsync(DiscordMessage m)
@@ -113,7 +117,7 @@ namespace BBotV2
             dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{m.Channel.Guild.Id}/config.json"));
 
             string pref = ".";
-            pref = (string)json.prefix;
+            pref = ((string)json.prefix).ToLower();
             
             return Task.FromResult(m.GetStringPrefixLength(pref));
         }

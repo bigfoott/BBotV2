@@ -58,7 +58,7 @@ namespace BBotV2.CNext
                         {
                             Title = "Votekick",
                             Description = $"{m.Mention} has been kicked from voice chat.",
-                            Color = Program.bot.embedColor
+                            Color = Program.embedColor
                         };
 
                         await ctx.RespondAsync("", embed: embed);
@@ -75,20 +75,119 @@ namespace BBotV2.CNext
             else
             {
                 await ctx.Message.DeleteAsync();
+                
+
+                if (count > 100) count = 100;
+                List<DiscordMessage> msgs = (await ctx.Channel.GetMessagesAsync(limit: count)).ToList();
 
                 var embed = new DiscordEmbedBuilder()
                 {
                     Title = "Delete",
                     Description = "<a:loading:505521532957884417> Deleting messages...",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
 
                 DiscordMessage msg = await ctx.RespondAsync("", embed: embed);
 
-                if (count > 100) count = 100;
 
-                List<DiscordMessage> msgs = (await ctx.Channel.GetMessagesAsync(limit: count + 1)).Where(m => m.Id != msg.Id).ToList();
+                int deleted = msgs.Count;
+                if (msgs.Count == 1)
+                {
+                    try
+                    {
+                        await msgs[0].DeleteAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        deleted = 0;
+                        if (ex is BadRequestException || ex is UnauthorizedException)
+                        {
+                            if (msgs[0].CreationTimestamp < DateTimeOffset.UtcNow.AddDays(-14))
+                                deleted = 0;
+                        }
+                        else
+                        {
+                            await msg.DeleteAsync();
+                            await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                            return;
+                        }
 
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        await ctx.Channel.DeleteMessagesAsync(msgs);
+                    }
+                    catch (Exception ex)
+                    {
+                        deleted = 0;
+                        if (ex is BadRequestException)
+                        {
+                            List<DiscordMessage> delete = new List<DiscordMessage>();
+                            foreach (DiscordMessage m in msgs)
+                                if (m.CreationTimestamp > DateTimeOffset.UtcNow.AddDays(-14))
+                                    delete.Add(m);
+
+                            deleted = delete.Count;
+                            await ctx.Channel.DeleteMessagesAsync(delete);
+                        }
+                        else if (ex is UnauthorizedException)
+                        {
+                            List<DiscordMessage> delete = new List<DiscordMessage>();
+                            foreach (DiscordMessage _m in msgs.Where(m => m.CreationTimestamp > DateTimeOffset.UtcNow.AddDays(-14))) delete.Add(_m);
+                            deleted = delete.Count;
+                            await ctx.Channel.DeleteMessagesAsync(delete);
+                        }
+                        else
+                        {
+                            await msg.DeleteAsync();
+                            await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                            return;
+                        }
+
+                    }
+                }
+
+                embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Delete",
+                    Description = $"Successfully deleted **`{deleted}`** messages.",
+                    Color = Program.embedColor
+                };
+                if (deleted == 0) embed.Description = "Could not delete any messages.";
+
+                await msg.ModifyAsync("", embed: (DiscordEmbed)embed);
+                await Task.Delay(new TimeSpan(0, 0, 5)).ContinueWith(t => msg.DeleteAsync());
+            }
+        }
+
+        [Command("clean"), IsAllowed("mod")]
+        public async Task Clean(CommandContext ctx, int max = 100)
+        {
+            if (!Perms.UserHasChannelPerm(ctx.Guild.CurrentMember, ctx.Channel, Permissions.ManageMessages))
+                await Program.bot.SendError(ctx, "Clean", "Missing permission: `Manage Messages`");
+            else
+            {
+                await ctx.Message.DeleteAsync();
+
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Clean",
+                    Description = "<a:loading:505521532957884417> Deleting messages...",
+                    Color = Program.embedColor
+                };
+                
+                DiscordMessage msg = await ctx.RespondAsync("", embed: embed);
+                
+                string prefix = ((dynamic)JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"))).prefix;
+
+                if (max > 100) max = 100;
+
+                List<DiscordMessage> msgs = (await ctx.Channel.GetMessagesAsync(max))
+                    .Where(m => m.Id != msg.Id && (m.Author == ctx.Guild.CurrentMember || m.Content.ToLower().StartsWith(prefix.ToLower()))).ToList();
+                
                 int deleted = msgs.Count;
                 try
                 {
@@ -121,15 +220,16 @@ namespace BBotV2.CNext
                     else
                     {
                         await msg.DeleteAsync();
-                        await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                        await Program.bot.SendError(ctx, "Clean", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                        return;
                     }
 
                 }
                 embed = new DiscordEmbedBuilder()
                 {
-                    Title = "Delete",
+                    Title = "Clean",
                     Description = $"Successfully deleted **`{deleted}`** messages.",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
                 await msg.ModifyAsync("", embed: (DiscordEmbed)embed);
                 await Task.Delay(new TimeSpan(0, 0, 5)).ContinueWith(t => msg.DeleteAsync());

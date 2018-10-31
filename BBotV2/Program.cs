@@ -17,6 +17,8 @@ namespace BBotV2
         public static string token;
         public static ulong botOwnerId;
 
+        public static DiscordColor embedColor;
+
         static void Main(string[] args)
         {
             Log("Starting...");
@@ -41,17 +43,20 @@ namespace BBotV2
         
         static async Task MainAsync(string[] args)
         {
-            Log("MainAsync started.");
+            Log("MainAsync started.", "&2");
             
-            Log("Creating bot object.");
-            bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Idle, "#ff7700");
+            Log("Creating bot object.", "&2");
+
+            embedColor = new DiscordColor("#ff7700");
+
+            bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Idle);
             
             await Task.Delay(-1);
         }
         
         public static void Log(string message, string color = "&7")
         {
-            FConsole.WriteLine($"{color}[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt")}] &f{message}");
+            FConsole.WriteLine($"{color}[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt")}]%0&f {message}");
         }
     }
 }

@@ -29,7 +29,7 @@ namespace BBotV2.Misc
                 Directory.CreateDirectory($"guilds/{id}");
 
             if (!File.Exists($"guilds/{id}/config.json"))
-                File.WriteAllText($"guilds/{id}/config.json", "{\"prefix\": \".\"}");
+                File.WriteAllText($"guilds/{id}/config.json", "{\"prefix\": \".\",\"logchannel\": \"null\"}");
             if (!File.Exists($"guilds/{id}/tags.json"))
                 File.WriteAllText($"guilds/{id}/tags.json", "{}");
         }

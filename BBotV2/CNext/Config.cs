@@ -25,7 +25,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Prefix",
                     Description = $"This server's prefix is currently set to `{json.prefix}`.",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
                 
                 await ctx.RespondAsync("", embed: embed);
@@ -42,9 +42,52 @@ namespace BBotV2.CNext
                     {
                         Title = "Prefix",
                         Description = $"This server's prefix is now set to `{json.prefix}`.",
-                        Color = Program.bot.embedColor
+                        Color = Program.embedColor
                     };
 
+                    await ctx.RespondAsync("", embed: embed);
+                }
+            }
+        }
+
+        [Command("logchannel"), IsAllowed("mod")]
+        public async Task LogChannel(CommandContext ctx, DiscordChannel c = default)
+        {
+            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"));
+            if (c == default)
+            {
+                if (UInt64.TryParse((string)json.logchannel, out ulong id))
+                {
+                    c = ctx.Guild.GetChannel(id);
+                    if (c == null) await Program.bot.SendError(ctx, "Log Channel", "Unknown channel.");
+                    else
+                    {
+                        var embed = new DiscordEmbedBuilder()
+                        {
+                            Title = "Log Channel",
+                            Description = $"This server's log channel is set to {c.Mention}.",
+                            Color = Program.embedColor,
+                        };
+                        await ctx.RespondAsync("", embed: embed);
+                    }
+                }
+                else await Program.bot.SendError(ctx, "Log Channel", "No log channel has been set.");
+            }
+            else
+            {
+                if (c == null) await Program.bot.SendError(ctx, "Log Channel", "Unknown channel.");
+                else
+                {
+                    json.logchannel = "" + c.Id;
+                    File.WriteAllText($"guilds/{ctx.Guild.Id}/config.json", JsonConvert.SerializeObject(json, Formatting.Indented));
+                    Logger.UpdateLogChannel(ctx.Guild.Id);
+
+                    var embed = new DiscordEmbedBuilder()
+                    {
+                        Title = "Log Channel",
+                        Description = $"Log channel has been set to {c.Mention}.",
+                        Color = Program.embedColor
+                    };
                     await ctx.RespondAsync("", embed: embed);
                 }
             }

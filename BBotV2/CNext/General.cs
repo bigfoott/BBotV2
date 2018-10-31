@@ -22,7 +22,7 @@ namespace BBotV2.CNext
             var embed = new DiscordEmbedBuilder()
             {
                 Title = "Help",
-                Color = Program.bot.embedColor,
+                Color = Program.embedColor,
                 Footer = new DiscordEmbedBuilder.EmbedFooter() { Text = "🔨 = Moderator only command." }
             };
 
@@ -35,7 +35,8 @@ namespace BBotV2.CNext
                                          $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
                                          $"\n• **{p}createtag/edittag <tag name> <message>:** Create or edit a tag. \\🔨" +
                                          $"\n• **{p}deletetag <tag name>:** Delete a tag. \\🔨");
-            embed.AddField("Moderation COmmands", $"• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" );
+            embed.AddField("Moderation COmmands", $"• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" +
+                                                $"\n• **{p}clean:** Clear chat of bot commands and messages. \\🔨" );
             embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨");
 
             await ctx.RespondAsync("", embed: embed);

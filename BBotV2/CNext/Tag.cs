@@ -65,7 +65,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Tags",
                     Description = $"Successfully {action} tag `{name}` with message:\n```{message}```",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
                 if (hasCodeBlock)
                     embed.WithFooter("Note: Triple back-quotes (```) replaced with triple apostrophes (''') in this message.");
@@ -93,7 +93,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Tags",
                     Description = $"Successfully deleted tag `{name}`.",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
 
                 await ctx.RespondAsync("", embed: embed);
@@ -120,7 +120,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Tags",
                     Description = $"Raw message for `{name}`:\n```{message}```",
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
                 if (hasCodeBlock)
                     embed.WithFooter("Note: Triple back-quotes (```) replaced with apostrophes (''') in this message.");
@@ -146,7 +146,7 @@ namespace BBotV2.CNext
                 {
                     Title = "Tags",
                     Description = message,
-                    Color = Program.bot.embedColor
+                    Color = Program.embedColor
                 };
 
                 await ctx.RespondAsync("", embed: embed);
