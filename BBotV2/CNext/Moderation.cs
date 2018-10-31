@@ -14,7 +14,7 @@ using DSharpPlus.Exceptions;
 
 namespace BBotV2.CNext
 {
-    class Moderation : BaseCommandModule
+    class Moderation : Overrides.BaseCommandOverride
     {
         [Command("vkick"), IsAllowed("mod")]
         public async Task KickVoice(CommandContext ctx, DiscordMember m = default)
@@ -181,7 +181,7 @@ namespace BBotV2.CNext
                 
                 DiscordMessage msg = await ctx.RespondAsync("", embed: embed);
                 
-                string prefix = ((dynamic)JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"))).prefix;
+                string prefix = Bot.prefixes[ctx.Guild.Id];
 
                 if (max > 100) max = 100;
 

@@ -33,32 +33,37 @@ namespace BBotV2.Misc
             else logChannels.Add(guildID, 0);
         }
         
-        public static async Task LogCommand(CommandExecutionEventArgs e)
+        public static async Task LogCommand(CommandContext ctx)
         {
-            if (!init || logChannels[e.Context.Guild.Id] == 0) return;
+            if (!init || logChannels[ctx.Guild.Id] == 0) return;
 
             var embed = new DiscordEmbedBuilder()
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor()
                 {
-                    Name = e.Context.Member.Username + "#" + e.Context.Member.Discriminator + $" ({e.Context.Member.Id})",
-                    IconUrl = e.Context.Member.AvatarUrl,
+                    Name = ctx.Member.Username + "#" + ctx.Member.Discriminator + $" ({ctx.Member.Id})",
+                    IconUrl = ctx.Member.AvatarUrl,
                 },
                 Timestamp = DateTime.Now,
                 Color = new DiscordColor("#f4dc41"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter()
                 {
-                    Text = "Message ID: " + e.Context.Message.Id
+                    Text = "Message ID: " + ctx.Message.Id
                 },
-                Description = $"**Command executed in {e.Context.Channel.Mention}:**\n{e.Context.Message.Content}"
+                Description = $"**Command executed in {ctx.Channel.Mention}:**\n{ctx.Message.Content}"
             };
 
-            await e.Context.Client.SendMessageAsync(e.Context.Guild.GetChannel(logChannels[e.Context.Guild.Id]), "", embed: embed);
+            await ctx.Client.SendMessageAsync(ctx.Guild.GetChannel(logChannels[ctx.Guild.Id]), "", embed: embed);
         }
 
         public static async Task LogDeletedMessage(MessageDeleteEventArgs e)
         {
-            if (!init || logChannels[e.Guild.Id] == 0 || Program.bot.startTime > e.Message.CreationTimestamp || e.Message.Author.IsBot) return;
+            if (!init || logChannels[e.Guild.Id] == 0 || Bot.startTime > e.Message.CreationTimestamp || e.Message.Author.IsBot) return;
+            else if (e.Message.Content.ToLower().Contains("tag") || e.Message.Content.ToLower().Contains("delete"))
+            {
+                string p = Bot.prefixes[e.Guild.Id];
+                if (e.Message.Content.ToLower().StartsWith(p + "tag") || e.Message.Content.ToLower().StartsWith(p + "delete")) return;
+            }
 
             string deleter = "";
 
@@ -117,7 +122,6 @@ namespace BBotV2.Misc
                 Color = new DiscordColor("#bc5400"),
                 Description = $"**Bulk deleted `{e.Messages.Count}` messages from {e.Channel.Mention}.**"
             };
-            Console.WriteLine("test");
             await e.Client.SendMessageAsync(e.Channel.Guild.GetChannel(logChannels[e.Channel.Guild.Id]), "", embed: embed);
         }
 

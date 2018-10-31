@@ -87,6 +87,7 @@
     <Compile Include="Misc\IsAllowedAttribute.cs" />
     <Compile Include="Misc\MathParser.cs" />
     <Compile Include="Misc\Perms.cs" />
+    <Compile Include="Overrides\BaseCommandOverride.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

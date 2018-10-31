@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace BBotV2.CNext
 {
-    class General : BaseCommandModule
+    class General : Overrides.BaseCommandOverride
     {
         [Command("help"), Aliases("h")]
         public async Task Help(CommandContext ctx)
         {
-            string p = ((dynamic)JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"))).prefix;
+            string p = Bot.prefixes[ctx.Guild.Id];
 
             var embed = new DiscordEmbedBuilder()
             {

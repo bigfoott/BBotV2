@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BBotV2.CNext
 {
-    class Fun : BaseCommandModule
+    class Fun : Overrides.BaseCommandOverride
     {
         [Command("ascii")]
         public async Task Ascii(CommandContext ctx, [RemainingText] string message = "")

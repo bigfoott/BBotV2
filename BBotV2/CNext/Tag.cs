@@ -13,7 +13,7 @@ using BBotV2.Misc;
 
 namespace BBotV2.CNext
 {
-    class Tag : BaseCommandModule
+    class Tag : Overrides.BaseCommandOverride
     {
         [Command("tag")]
         public async Task TagCmd(CommandContext ctx, string name = "", [RemainingText] string args = "")

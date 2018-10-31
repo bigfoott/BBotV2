@@ -12,19 +12,17 @@ using System.Threading.Tasks;
 
 namespace BBotV2.CNext
 {
-    class Config : BaseCommandModule
+    class Config : Overrides.BaseCommandOverride
     {
         [Command("prefix"), IsAllowed("mod")]
         public async Task Help(CommandContext ctx, string newPrefix = "")
         {
-            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"));
-            
             if (newPrefix == "")
             {
                 var embed = new DiscordEmbedBuilder()
                 {
                     Title = "Prefix",
-                    Description = $"This server's prefix is currently set to `{json.prefix}`.",
+                    Description = $"This server's prefix is currently set to `{Bot.prefixes[ctx.Guild.Id]}`.",
                     Color = Program.embedColor
                 };
                 
@@ -35,13 +33,15 @@ namespace BBotV2.CNext
                 if (newPrefix.Length > 5) await Program.bot.SendError(ctx, "Prefix", "Prefix cannot be longer than 5 characters.");
                 else
                 {
+                    dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{ctx.Guild.Id}/config.json"));
                     json.prefix = newPrefix;
                     File.WriteAllText($"guilds/{ctx.Guild.Id}/config.json", JsonConvert.SerializeObject(json, Formatting.Indented));
+                    Bot.UpdateGuildPrefix(ctx.Guild.Id, newPrefix);
 
                     var embed = new DiscordEmbedBuilder()
                     {
                         Title = "Prefix",
-                        Description = $"This server's prefix is now set to `{json.prefix}`.",
+                        Description = $"This server's prefix is now set to `{newPrefix}`.",
                         Color = Program.embedColor
                     };
 

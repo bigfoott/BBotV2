@@ -21,15 +21,15 @@ namespace BBotV2
         public InteractivityExtension inter;
         public CommandsNextExtension cnext;
 
-        public DateTime startTime;
+        public static DateTime startTime;
 
-        public int totalUsers = 0;
-        public int totalGuilds = 0;
+        public static int totalUsers = 0;
+        public static int totalGuilds = 0;
+
+        public static Dictionary<ulong, string> prefixes;
 
         public Bot(string token, string activity = "", ActivityType activityType = ActivityType.Playing, UserStatus status = UserStatus.Online)
         {
-            Program.Log("Initialized embed color.", "&2");
-
             var config = new DiscordConfiguration
             {
                 Token = token,
@@ -69,8 +69,7 @@ namespace BBotV2
             cnext.RegisterCommands<Config>();
             
             Program.Log("Initialized CNext extension.", "&2");
-
-            cnext.CommandExecuted += Logger.LogCommand;
+            
             client.MessageDeleted += Logger.LogDeletedMessage;
             client.MessagesBulkDeleted += Logger.LogBulkDeletedMessages;
             client.MessageUpdated += Logger.LogMessageEdit;
@@ -78,8 +77,7 @@ namespace BBotV2
             
             client.GuildCreated += async e =>
             {
-                if (Directory.Exists($"guilds/old/{e.Guild.Id}"))
-                    Directory.Move($"guilds/old/{e.Guild.Id}", $"guilds/{e.Guild.Id}");
+                if (Directory.Exists($"guilds/old/{e.Guild.Id}")) Directory.Move($"guilds/old/{e.Guild.Id}", $"guilds/{e.Guild.Id}");
                 FileManager.CheckGuildFiles(e.Guild.Id);
 
                 UpdateCount();
@@ -99,10 +97,19 @@ namespace BBotV2
             {
                 await client.UpdateStatusAsync(new DiscordActivity(activity, activityType), status);
 
-                startTime = DateTime.Now;
+                prefixes = new Dictionary<ulong, string>();
+
+                foreach (ulong id in e.Client.Guilds.Keys)
+                {
+                    FileManager.CheckGuildFiles(id);
+                    UpdateGuildPrefix(id);
+                }
+                
+                UpdateCount();
 
                 Logger.Init(client);
-
+                
+                startTime = DateTime.Now;
                 Program.Log("Setup completed.", "%2&0");
             };
             Program.Log("Subscribed to events.", "&2");
@@ -114,11 +121,9 @@ namespace BBotV2
 
         private static Task<int> PrefixPredicateAsync(DiscordMessage m)
         {
-            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{m.Channel.Guild.Id}/config.json"));
-
             string pref = ".";
-            pref = ((string)json.prefix).ToLower();
-            
+            if (prefixes.ContainsKey(m.Channel.GuildId)) pref = prefixes[m.Channel.Guild.Id];
+
             return Task.FromResult(m.GetStringPrefixLength(pref));
         }
 
@@ -142,6 +147,13 @@ namespace BBotV2
             var msg = await ctx.RespondAsync("", embed: embed);
             await Task.Delay(new TimeSpan(0, 0, 5));
             await msg.DeleteAsync();
+        }
+
+        public static void UpdateGuildPrefix(ulong id, string _override = "")
+        {
+            if (prefixes.ContainsKey(id)) prefixes.Remove(id);
+            if (_override == "") prefixes.Add(id, (string)((dynamic)JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{id}/config.json"))).prefix);
+            else prefixes.Add(id, _override);
         }
     }
 }
