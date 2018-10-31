@@ -27,6 +27,7 @@ namespace BBotV2.CNext
             };
 
             embed.AddField("General Commands", $"• **{p}help:** Show this message." +
+                                             $"\n• **{p}info:** Get info about the bot." +
                                              $"\n• **{p}whois <user>:** Get info about a user.");
             embed.AddField("Fun Commands", $"• **{p}ascii <message>:** Create ascii art of text." +
                                          $"\n• **{p}math <equation>:** Calcuate a math equation.");
@@ -35,35 +36,38 @@ namespace BBotV2.CNext
                                          $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
                                          $"\n• **{p}createtag/edittag <tag name> <message>:** Create or edit a tag. \\🔨" +
                                          $"\n• **{p}deletetag <tag name>:** Delete a tag. \\🔨");
-            embed.AddField("Moderation COmmands", $"• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" +
-                                                $"\n• **{p}clean:** Clear chat of bot commands and messages. \\🔨" );
-            embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨");
+            embed.AddField("Moderation Commands", $"• **{p}vkick <user>:** Kick a user from voice chat. \\🔨" +
+                                                $"\n• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" +
+                                                $"\n• **{p}clean [amount]:** Clear chat of bot commands and messages. \\🔨" );
+            embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨" +
+                                            $"• **{p}logchannel [channel]:** Set the log channel for the server. \\🔨");
 
             await ctx.RespondAsync("", embed: embed);
         }
-
+        
         [Command("info")]
         public async Task Info(CommandContext ctx)
         {
             int sec = (int)Math.Truncate((DateTime.Now - Bot.startTime).TotalSeconds), min = 0, hour = 0, day = 0, week = 0;
-            while (sec >= 60) sec = sec - 60; min++;
-            while (min >= 60) min = min - 60; hour++;
-            while (hour >= 24) hour = hour - 24; day++;
-            while (day >= 7) day = day - 7; week++;
+            while (sec >= 60) { sec = sec - 60; min++; }
+            while (min >= 60) { min = min - 60; hour++; }
+            while (hour >= 24) { hour = hour - 24; day++; }
+            while (day >= 7) { day = day - 7; week++; }
             string uptime = $"{week}w {day}d {hour}h {min}m {sec}s";
-
-            string desc = "";
+            
+            string leftCol = $"• **Creator**: <@{Program.botOwnerId}>\n" +
+                             $"• **GitHub**: [Click Here](https://github.com/bigfoott/BBotV2)";
+            string rightCol = $"• **Servers**: {Bot.totalGuilds}\n" +
+                              $"• **Users**: {Bot.totalUsers}\n" +
+                              $"• **Uptime**: {uptime}";
 
             var embed = new DiscordEmbedBuilder()
             {
                 Title = "Info",
-                Description = "BBot V2 <:POGGIES:492954535170408453>\n\n" + desc,
+                Description = "BBot V2 <:POGGIES:492954535170408453>",
                 Color = Program.embedColor
             };
-            embed.AddField("Servers", "" + Bot.totalGuilds, true)
-                 .AddField("Users", "" + Bot.totalUsers, true)
-                 .AddField("Uptime", uptime, true);
-            embed.AddField("GitHub", "",);
+            embed.AddField("\u200b", leftCol, true).AddField("\u200b", rightCol, true);
             await ctx.RespondAsync("", embed: embed);
         }
 
