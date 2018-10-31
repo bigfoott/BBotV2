@@ -42,6 +42,31 @@ namespace BBotV2.CNext
             await ctx.RespondAsync("", embed: embed);
         }
 
+        [Command("info")]
+        public async Task Info(CommandContext ctx)
+        {
+            int sec = (int)Math.Truncate((DateTime.Now - Bot.startTime).TotalSeconds), min = 0, hour = 0, day = 0, week = 0;
+            while (sec >= 60) sec = sec - 60; min++;
+            while (min >= 60) min = min - 60; hour++;
+            while (hour >= 24) hour = hour - 24; day++;
+            while (day >= 7) day = day - 7; week++;
+            string uptime = $"{week}w {day}d {hour}h {min}m {sec}s";
+
+            string desc = "";
+
+            var embed = new DiscordEmbedBuilder()
+            {
+                Title = "Info",
+                Description = "BBot V2 <:POGGIES:492954535170408453>\n\n" + desc,
+                Color = Program.embedColor
+            };
+            embed.AddField("Servers", "" + Bot.totalGuilds, true)
+                 .AddField("Users", "" + Bot.totalUsers, true)
+                 .AddField("Uptime", uptime, true);
+            embed.AddField("GitHub", "",);
+            await ctx.RespondAsync("", embed: embed);
+        }
+
         [Command("whois")]
         public async Task Whois(CommandContext ctx, DiscordMember m = default)
         {
