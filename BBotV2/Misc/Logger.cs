@@ -111,8 +111,6 @@ namespace BBotV2.Misc
                 r = r.Substring(0, r.Length - 2);
 
                 embed.AddField("Reaction" + _s, r);
-
-                Discord
             }
 
             await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);

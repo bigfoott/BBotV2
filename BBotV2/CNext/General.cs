@@ -40,7 +40,7 @@ namespace BBotV2.CNext
                                                 $"\n• **{p}delete [amount]:** Delete a certain amount of messages in chat. \\🔨" +
                                                 $"\n• **{p}clean [amount]:** Clear chat of bot commands and messages. \\🔨" );
             embed.AddField("Config Commands", $"• **{p}prefix <new prefix>:** Set a new prefix for the server. \\🔨" +
-                                            $"• **{p}logchannel [channel]:** Set the log channel for the server. \\🔨");
+                                            $"\n• **{p}logchannel [channel]:** Set the log channel for the server. \\🔨");
 
             await ctx.RespondAsync("", embed: embed);
         }
