@@ -19,10 +19,10 @@ namespace BBotV2.CNext
         [Command("vkick"), IsAllowed("mod")]
         public async Task KickVoice(CommandContext ctx, DiscordMember m = default)
         {
-            if (m == default) await Program.bot.SendError(ctx, "Voicekick", "Missing: `User to kick`");
+            if (m == default) await Bot.SendError(ctx, "Voicekick", "Missing: `User to kick`");
             else if (!ctx.Guild.Channels.Any(c => c.Type == ChannelType.Voice && c.Users.Any(u => u.Id == m.Id)))
-                await Program.bot.SendError(ctx, "Voicekick", "That user is not in a voice channel.");
-            else if (m.IsOwner && m != ctx.Member) await Program.bot.SendError(ctx, "Voicekick", "That user has a higher role than you.");
+                await Bot.SendError(ctx, "Voicekick", "That user is not in a voice channel.");
+            else if (m.IsOwner && m != ctx.Member) await Bot.SendError(ctx, "Voicekick", "That user has a higher role than you.");
             else
             {
                 DiscordRole kicked = m.Roles.OrderByDescending(r => r.Position).FirstOrDefault();
@@ -34,7 +34,7 @@ namespace BBotV2.CNext
                 if (kicked != null) kickedInt = kicked.Position;
                 if (kicking != null) kickingInt = kicking.Position;
 
-                if (m != ctx.Member && kickedInt >= kickingInt) await Program.bot.SendError(ctx, "Voicekick", "That user has a higher role than you.");
+                if (m != ctx.Member && kickedInt >= kickingInt) await Bot.SendError(ctx, "Voicekick", "That user has a higher role than you.");
                 else
                 {
                     DiscordChannel vc = ctx.Guild.Channels.FirstOrDefault(c => c.Type == ChannelType.Voice && c.Users.Any(u => u.Id == m.Id));
@@ -42,9 +42,9 @@ namespace BBotV2.CNext
                     bool manageChannels = Perms.BotHasGuildPerm(ctx.Guild, Permissions.ManageChannels);
                     bool moveMembers = Perms.BotHasGuildPerm(ctx.Guild, Permissions.MoveMembers);
 
-                    if (!manageChannels && !moveMembers) await Program.bot.SendError(ctx, "Voicekick", $"Missing permissions: `Manage Channels, Move Members`");
-                    else if (!manageChannels) await Program.bot.SendError(ctx, "Voicekick", $"Missing permission: `Manage Channels`");
-                    else if (!moveMembers) await Program.bot.SendError(ctx, "Voicekick", $"Missing permission: `Move Members`");
+                    if (!manageChannels && !moveMembers) await Bot.SendError(ctx, "Voicekick", $"Missing permissions: `Manage Channels, Move Members`");
+                    else if (!manageChannels) await Bot.SendError(ctx, "Voicekick", $"Missing permission: `Manage Channels`");
+                    else if (!moveMembers) await Bot.SendError(ctx, "Voicekick", $"Missing permission: `Move Members`");
                     else
                     {
                         DiscordChannel channel = default;
@@ -71,7 +71,7 @@ namespace BBotV2.CNext
         public async Task Delete(CommandContext ctx, int count = 1)
         {
             if (!Perms.UserHasChannelPerm(ctx.Guild.CurrentMember, ctx.Channel, Permissions.ManageMessages))
-                await Program.bot.SendError(ctx, "Delete", "Missing permission: `Manage Messages`");
+                await Bot.SendError(ctx, "Delete", "Missing permission: `Manage Messages`");
             else
             {
                 await ctx.Message.DeleteAsync();
@@ -108,7 +108,7 @@ namespace BBotV2.CNext
                         else
                         {
                             await msg.DeleteAsync();
-                            await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                            await Bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
                             return;
                         }
 
@@ -143,7 +143,7 @@ namespace BBotV2.CNext
                         else
                         {
                             await msg.DeleteAsync();
-                            await Program.bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                            await Bot.SendError(ctx, "Delete", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
                             return;
                         }
 
@@ -167,7 +167,7 @@ namespace BBotV2.CNext
         public async Task Clean(CommandContext ctx, int max = 100)
         {
             if (!Perms.UserHasChannelPerm(ctx.Guild.CurrentMember, ctx.Channel, Permissions.ManageMessages))
-                await Program.bot.SendError(ctx, "Clean", "Missing permission: `Manage Messages`");
+                await Bot.SendError(ctx, "Clean", "Missing permission: `Manage Messages`");
             else
             {
                 await ctx.Message.DeleteAsync();
@@ -220,7 +220,7 @@ namespace BBotV2.CNext
                     else
                     {
                         await msg.DeleteAsync();
-                        await Program.bot.SendError(ctx, "Clean", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                        await Bot.SendError(ctx, "Clean", $"{ex.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
                         return;
                     }
 

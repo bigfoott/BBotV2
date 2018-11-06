@@ -58,7 +58,7 @@ namespace BBotV2.Misc
 
         public static async Task LogDeletedMessage(MessageDeleteEventArgs e)
         {
-            if (!init || logChannels[e.Guild.Id] == 0 || Bot.startTime > e.Message.CreationTimestamp || e.Message.Author.IsBot) return;
+            if (!init || e.Channel.IsPrivate || logChannels[e.Guild.Id] == 0 || Bot.startTime > e.Message.CreationTimestamp || e.Message.Author.IsBot) return;
             else if (e.Message.Content.ToLower().Contains("tag") || e.Message.Content.ToLower().Contains("delete"))
             {
                 string p = Bot.prefixes[e.Guild.Id];
@@ -118,7 +118,7 @@ namespace BBotV2.Misc
 
         public static async Task LogBulkDeletedMessages(MessageBulkDeleteEventArgs e)
         {
-            if (!init || logChannels[e.Channel.GuildId] == 0) return;
+            if (!init || e.Channel.IsPrivate || logChannels[e.Channel.GuildId] == 0) return;
 
             var embed = new DiscordEmbedBuilder()
             {
@@ -142,8 +142,9 @@ namespace BBotV2.Misc
 
         public static async Task LogMessageEdit(MessageUpdateEventArgs e)
         {
-            if (!init || logChannels[e.Guild.Id] == 0 || e.Message.Author.IsBot) return;
-
+            if (!init || e.Channel.IsPrivate || logChannels[e.Guild.Id] == 0 || e.Message.Author.IsBot ||
+                (e.MessageBefore.Embeds.Count == 0 && e.Message.Embeds.Count != 0)) return;
+            
             var embed = new DiscordEmbedBuilder()
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor()
@@ -151,12 +152,13 @@ namespace BBotV2.Misc
                     Name = e.Message.Author.Username + "#" + e.Message.Author.Discriminator + $" ({e.Message.Author.Id})",
                     IconUrl = e.Message.Author.AvatarUrl,
                 },
-                Color = new DiscordColor("#42e5f4"),
+                Color = new DiscordColor("#42e5f4"), 
                 Footer = new DiscordEmbedBuilder.EmbedFooter()
                 {
                     Text = "Message ID: " + e.Message.Id
                 },
-                Description = "Message edited in " + e.Channel.Mention + ":"
+                Description = "Message edited in " + e.Channel.Mention + ":",
+                Timestamp = DateTime.Now
             };
             if (e.MessageBefore != null) embed.AddField("Before", "\u200b" + e.MessageBefore.Content);
             embed.AddField("After", "\u200b" + e.Message.Content);
@@ -168,19 +170,6 @@ namespace BBotV2.Misc
         {
             if (!init || logChannels[e.Guild.Id] == 0 || e.User.IsBot) return;
 
-            string state = "joined";
-            DiscordChannel channel = default;
-
-            if (e.Before == null)
-                channel = e.After.Channel;
-            else if (e.After == null)
-            {
-                state = "left";
-                channel = e.Before.Channel;
-            }
-            else
-                return;
-
             var embed = new DiscordEmbedBuilder()
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor()
@@ -188,12 +177,60 @@ namespace BBotV2.Misc
                     Name = e.User.Username + "#" + e.User.Discriminator + $" ({e.User.Id})",
                     IconUrl = e.User.AvatarUrl,
                 },
-                Footer = new DiscordEmbedBuilder.EmbedFooter()
+                Color = new DiscordColor("#d942f4"),
+                Timestamp = DateTime.Now
+            };
+
+            if (e.Before.Channel == null && e.After.Channel != null)
+            {
+                embed = embed.WithDescription($"{e.User.Mention} joined voice channel {e.After.Channel.Name}.").WithFooter("Channel ID: " + e.After.Channel.Id);
+            }
+            else if (e.Before.Channel != null && e.After.Channel == null)
+            {
+                embed = embed.WithDescription($"{e.User.Mention} left voice channel {e.Before.Channel.Name}.").WithFooter("Channel ID: " + e.Before.Channel.Id);
+            }
+            else if (e.Before.Channel != null && e.After.Channel != null && e.Before.Channel != e.After.Channel)
+            {
+                embed = embed.WithDescription($"{e.User.Mention} switched from channel {e.Before.Channel.Name} to channel {e.After.Channel.Name}.").WithFooter("Channel IDs: " + e.Before.Channel.Id + ", " + e.After.Channel.Id);
+            }
+            else return;
+            
+            await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
+        }
+
+        public static async Task LogUserJoined(GuildMemberAddEventArgs e)
+        {
+            if (!init || logChannels[e.Guild.Id] == 0) return;
+
+            var embed = new DiscordEmbedBuilder()
+            {
+                Author = new DiscordEmbedBuilder.EmbedAuthor()
                 {
-                    Text = "Channel ID: " + channel.Id
+                    Name = e.Member.Username + "#" + e.Member.Discriminator + $" ({e.Member.Id})",
+                    IconUrl = e.Member.AvatarUrl,
                 },
-                Description = $"{e.User.Mention} {state} voice channel {channel.Name}.",
-                Color = new DiscordColor("#d942f4")
+                Color = new DiscordColor("#d942f4"),
+                Timestamp = DateTime.Now,
+                Description = $"{e.Member.Mention} has joined the server."
+            };
+
+            await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
+        }
+
+        public static async Task LogUserLeft(GuildMemberRemoveEventArgs e)
+        {
+            if (!init || logChannels[e.Guild.Id] == 0) return;
+
+            var embed = new DiscordEmbedBuilder()
+            {
+                Author = new DiscordEmbedBuilder.EmbedAuthor()
+                {
+                    Name = e.Member.Username + "#" + e.Member.Discriminator + $" ({e.Member.Id})",
+                    IconUrl = e.Member.AvatarUrl,
+                },
+                Color = new DiscordColor("#d942f4"),
+                Timestamp = DateTime.Now,
+                Description = $"{e.Member.Mention} has left the server."
             };
 
             await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);

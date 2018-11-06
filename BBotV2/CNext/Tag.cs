@@ -22,8 +22,8 @@ namespace BBotV2.CNext
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
 
-            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
-            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            if (name == "") await Bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Bot.SendError(ctx, "Tags", "That tag doesn't exist.");
             else
             {
                 string message = tags[name];
@@ -38,8 +38,8 @@ namespace BBotV2.CNext
         [Command("createtag"), Aliases("edittag"), IsAllowed("mod")]
         public async Task CreateTag(CommandContext ctx, string name = "", [RemainingText] string message = "")
         {
-            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`, `Tag message`");
-            else if (message == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag message`");
+            if (name == "") await Bot.SendError(ctx, "Tags", "Missing: `Tag name`, `Tag message`");
+            else if (message == "") await Bot.SendError(ctx, "Tags", "Missing: `Tag message`");
             else
             {
                 ulong id = ctx.Guild.Id;
@@ -81,8 +81,8 @@ namespace BBotV2.CNext
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
 
-            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
-            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            if (name == "") await Bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Bot.SendError(ctx, "Tags", "That tag doesn't exist.");
             else
             {
                 tags.Remove(name);
@@ -107,8 +107,8 @@ namespace BBotV2.CNext
 
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{id}/tags.json"));
 
-            if (name == "") await Program.bot.SendError(ctx, "Tags", "Missing: `Tag name`");
-            else if (!tags.ContainsKey(name)) await Program.bot.SendError(ctx, "Tags", "That tag doesn't exist.");
+            if (name == "") await Bot.SendError(ctx, "Tags", "Missing: `Tag name`");
+            else if (!tags.ContainsKey(name)) await Bot.SendError(ctx, "Tags", "That tag doesn't exist.");
             else
             {
                 string message = tags[name];
@@ -134,7 +134,7 @@ namespace BBotV2.CNext
         {
             var tags = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"guilds/{ctx.Guild.Id}/tags.json"));
 
-            if (tags.Count == 0) await Program.bot.SendError(ctx, "Tags", "There are no tags on this server.");
+            if (tags.Count == 0) await Bot.SendError(ctx, "Tags", "There are no tags on this server.");
             else
             {
                 string message = "**Tags in this server:**\n```";

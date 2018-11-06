@@ -17,14 +17,14 @@ namespace BBotV2.CNext
         [Command("ascii")]
         public async Task Ascii(CommandContext ctx, [RemainingText] string message = "")
         {
-            if (message == "")  await Program.bot.SendError(ctx, "Ascii", "Missing: `Message`");
+            if (message == "")  await Bot.SendError(ctx, "Ascii", "Missing: `Message`");
             else await ctx.RespondAsync($"```{new WebClient().DownloadString($"http://artii.herokuapp.com/make?text={message}")}```");
         }
 
         [Command("math")]
         public async Task Math(CommandContext ctx, [RemainingText] string equation = "")
         {
-            if (equation == "") await Program.bot.SendError(ctx, "Math", $"Missing: `Equation`");
+            if (equation == "") await Bot.SendError(ctx, "Math", $"Missing: `Equation`");
             else
             {
                 MathParser parser = new MathParser();
@@ -35,7 +35,7 @@ namespace BBotV2.CNext
                 }
                 catch (Exception e)
                 {
-                    await Program.bot.SendError(ctx, "Math", $"{e.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
+                    await Bot.SendError(ctx, "Math", $"{e.Message}\n\n*(Show this to <@{Program.botOwnerId}>)*");
                     return;
                 }
 
@@ -45,6 +45,48 @@ namespace BBotV2.CNext
                     Description = $"Equation: **`{equation}`**\n\nResult: **`{val}`**",
                     Color = Program.embedColor
                 };
+                await ctx.RespondAsync("", embed: embed);
+            }
+        }
+
+        [Command("morse")]
+        public async Task Morse(CommandContext ctx, [RemainingText] string message = "")
+        {
+            if (message == "") await Bot.SendError(ctx, "Morse Translator", "Missing: `message`");
+            else if (message.ToCharArray().All(c => "-_. ".Contains(c)))
+            {
+                // morse to text
+                dynamic json = JsonConvert.DeserializeObject(new WebClient().DownloadString("http://www.morsecode-api.de/decode?string=" + message));
+
+                string text = json.plaintext;
+                string morse = json.morsecode;
+
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Morse Translator",
+                    Color = Program.embedColor
+                };
+                embed.AddField("Morse Code", morse);
+                embed.AddField("Plain Text", text);
+
+                await ctx.RespondAsync("", embed: embed);
+            }
+            else
+            {
+                // text to morse
+                dynamic json = JsonConvert.DeserializeObject(new WebClient().DownloadString("http://www.morsecode-api.de/encode?string=" + message));
+
+                string text = json.plaintext;
+                string morse = json.morsecode;
+
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Morse Translator",
+                    Color = Program.embedColor
+                };
+                embed.AddField("Plain Text", text);
+                embed.AddField("Morse Code", morse);
+
                 await ctx.RespondAsync("", embed: embed);
             }
         }

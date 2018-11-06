@@ -74,13 +74,16 @@ namespace BBotV2
             client.MessagesBulkDeleted += Logger.LogBulkDeletedMessages;
             client.MessageUpdated += Logger.LogMessageEdit;
             client.VoiceStateUpdated += Logger.LogVoice;
+            client.GuildMemberAdded += Logger.LogUserJoined;
+            client.GuildMemberRemoved += Logger.LogUserLeft;
             
             client.GuildCreated += async e =>
             {
                 if (Directory.Exists($"guilds/old/{e.Guild.Id}")) Directory.Move($"guilds/old/{e.Guild.Id}", $"guilds/{e.Guild.Id}");
                 FileManager.CheckGuildFiles(e.Guild.Id);
-
+                UpdateGuildPrefix(e.Guild.Id);
                 UpdateCount();
+                Logger.UpdateLogChannel(e.Guild.Id);
             };
             client.GuildDeleted += async e =>
             {
@@ -91,7 +94,15 @@ namespace BBotV2
             client.GuildAvailable += async e =>
             {
                 FileManager.CheckGuildFiles(e.Guild.Id);
+                UpdateGuildPrefix(e.Guild.Id);
                 UpdateCount();
+                Logger.UpdateLogChannel(e.Guild.Id);
+            };
+            client.GuildMemberAdded += async e =>
+            {
+                if (!Perms.BotHasGuildPerm(e.Guild, Permissions.ManageRoles)) return;
+                dynamic json = JsonConvert.DeserializeObject(File.ReadAllText($"guilds/{e.Guild.Id}/config.json"));
+                if (UInt64.TryParse((string)json.autorole, out ulong id)) await e.Member.GrantRoleAsync(e.Guild.GetRole(id));
             };
             client.Ready += async e =>
             {
@@ -135,7 +146,7 @@ namespace BBotV2
                 totalUsers += g.MemberCount;
         }
 
-        public async Task SendError(CommandContext ctx, string title, string message)
+        public static async Task SendError(CommandContext ctx, string title, string message)
         {
             var embed = new DiscordEmbedBuilder()
             {

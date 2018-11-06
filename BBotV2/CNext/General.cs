@@ -30,7 +30,8 @@ namespace BBotV2.CNext
                                              $"\n• **{p}info:** Get info about the bot." +
                                              $"\n• **{p}whois <user>:** Get info about a user.");
             embed.AddField("Fun Commands", $"• **{p}ascii <message>:** Create ascii art of text." +
-                                         $"\n• **{p}math <equation>:** Calcuate a math equation.");
+                                         $"\n• **{p}math <equation>:** Calcuate a math equation." +
+                                         $"\n• **{p}morse <message>:** Translate to/from morse code.");
             embed.AddField("Tag Commands", $"• **{p}tag <tag name> [args]:** Display a tag." +
                                          $"\n• **{p}listtags:** List all tags on this server." +
                                          $"\n• **{p}rawtag <tag name>:** Display the raw text of a tag." +
