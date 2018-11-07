@@ -76,6 +76,8 @@ namespace BBotV2
             client.VoiceStateUpdated += Logger.LogVoice;
             client.GuildMemberAdded += Logger.LogUserJoined;
             client.GuildMemberRemoved += Logger.LogUserLeft;
+            client.GuildBanAdded += Logger.LogBan;
+            client.GuildBanRemoved += Logger.LogUnban;
             
             client.GuildCreated += async e =>
             {

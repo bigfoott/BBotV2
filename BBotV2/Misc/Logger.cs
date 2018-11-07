@@ -235,5 +235,60 @@ namespace BBotV2.Misc
 
             await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
         }
+
+        public static async Task LogBan(GuildBanAddEventArgs e)
+        {
+            if (!init || logChannels[e.Guild.Id] == 0) return;
+
+            await Task.Delay(50);
+
+            string reason = ".";
+            if (Perms.BotHasGuildPerm(e.Guild, Permissions.ViewAuditLog))
+            {
+                var audit = (await e.Guild.GetAuditLogsAsync(limit: 1, action_type: AuditLogActionType.Ban)).FirstOrDefault();
+                if ((DateTime.Now - audit.CreationTimestamp).TotalSeconds < 2.2) reason = $" by {audit.UserResponsible.Mention}.\n\n**Reason:** {audit.Reason}";
+            }
+
+            var embed = new DiscordEmbedBuilder()
+            {
+                Author = new DiscordEmbedBuilder.EmbedAuthor()
+                {
+                    Name = e.Member.Username + "#" + e.Member.Discriminator + $" ({e.Member.Id})",
+                    IconUrl = e.Member.AvatarUrl,
+                },
+                Color = new DiscordColor("#f44b42"),
+                Timestamp = DateTime.Now,
+                Description = $"{e.Member.Mention} has been banned{reason}"
+            };
+            await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
+        }
+
+        public static async Task LogUnban(GuildBanRemoveEventArgs e)
+        {
+            if (!init || logChannels[e.Guild.Id] == 0) return;
+
+            await Task.Delay(50);
+
+            string reason = ".";
+            if (Perms.BotHasGuildPerm(e.Guild, Permissions.ViewAuditLog))
+            {
+                var audit = (await e.Guild.GetAuditLogsAsync(limit: 1, action_type: AuditLogActionType.Unban)).FirstOrDefault();
+                if ((DateTime.Now - audit.CreationTimestamp).TotalSeconds < 2.2) reason = $" by {audit.UserResponsible.Mention}.";
+            }
+
+            var embed = new DiscordEmbedBuilder()
+            {
+                Author = new DiscordEmbedBuilder.EmbedAuthor()
+                {
+                    Name = e.Member.Username + "#" + e.Member.Discriminator + $" ({e.Member.Id})",
+                    IconUrl = e.Member.AvatarUrl,
+                },
+                Color = new DiscordColor("#ff7f23"),
+                Timestamp = DateTime.Now,
+                Description = $"{e.Member.Mention} has been unbanned{reason}"
+            };
+
+            await e.Client.SendMessageAsync(e.Guild.GetChannel(logChannels[e.Guild.Id]), "", embed: embed);
+        }
     }
 }
