@@ -47,9 +47,9 @@ namespace BBotV2
             
             Log("Creating bot object.", "&2");
 
-            embedColor = new DiscordColor("#ff7700");
+            embedColor = new DiscordColor("#185696");
 
-            bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Idle);
+            bot = new Bot(token, "you 👀", ActivityType.Watching, UserStatus.Online);
             
             await Task.Delay(-1);
         }
