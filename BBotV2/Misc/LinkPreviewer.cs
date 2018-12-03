@@ -21,7 +21,7 @@ namespace BBotV2.Misc
                     string[] parts = links[i].Split('/');
                     if (parts.Length == 3)
                     {
-                        if (UInt64.TryParse(parts[1], out ulong ch) && UInt64.TryParse(parts[2], out ulong ms))
+                        if (parts[0] == e.Guild.Id.ToString() && UInt64.TryParse(parts[1], out ulong ch) && UInt64.TryParse(parts[2], out ulong ms))
                         {
                             var msg = await e.Guild.GetChannel(ch).GetMessageAsync(ms);
 
