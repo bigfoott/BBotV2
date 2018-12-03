@@ -78,6 +78,7 @@ namespace BBotV2
             client.GuildMemberRemoved += Logger.LogUserLeft;
             client.GuildBanAdded += Logger.LogBan;
             client.GuildBanRemoved += Logger.LogUnban;
+            client.MessageCreated += LinkPreviewer.MessageCreated;
             
             client.GuildCreated += async e =>
             {

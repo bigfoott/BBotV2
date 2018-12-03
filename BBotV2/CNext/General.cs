@@ -72,7 +72,7 @@ namespace BBotV2.CNext
             embed.AddField("\u200b", leftCol, true).AddField("\u200b", rightCol, true);
             await ctx.RespondAsync("", embed: embed);
         }
-
+        
         [Command("whois")]
         public async Task Whois(CommandContext ctx, DiscordMember m = default)
         {

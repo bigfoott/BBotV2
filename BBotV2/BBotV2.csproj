@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="Misc\LinkPreviewer.cs" />
     <Compile Include="Misc\Logger.cs" />
     <Compile Include="CNext\General.cs" />
     <Compile Include="CNext\Fun.cs" />
